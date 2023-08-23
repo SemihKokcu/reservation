@@ -8,9 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import crowsoft.reservation.business.abstracts.UserService;
+import crowsoft.reservation.core.entities.User;
 import crowsoft.reservation.core.utilities.results.DataResult;
+import crowsoft.reservation.core.utilities.results.ErrorDataResult;
 import crowsoft.reservation.core.utilities.results.Result;
-import crowsoft.reservation.entities.concretes.User;
 
 @RestController
 @RequestMapping("api/users")
@@ -59,5 +60,15 @@ public class UsersController {
     public ResponseEntity<Result> delete(@PathVariable int id) {
         Result result = userService.delete(id);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/get{email}")
+    public ResponseEntity<DataResult<User>> getByEmail(@PathVariable String email) {
+        try {
+            DataResult<User> result = userService.getByEmail(email);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ErrorDataResult<>("Something went wrong when getting the user by email"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

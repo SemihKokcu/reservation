@@ -25,9 +25,11 @@ import crowsoft.reservation.core.utilities.results.DataResult;
 import crowsoft.reservation.core.utilities.results.ErrorDataResult;
 import crowsoft.reservation.core.utilities.results.Result;
 import crowsoft.reservation.entities.concretes.Doctor;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("api/doctor")
+@Tag(name = "doctor")
 public class DoctorsController {
 
     private DoctorService doctorService;

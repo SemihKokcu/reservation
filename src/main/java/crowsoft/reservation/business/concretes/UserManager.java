@@ -1,17 +1,19 @@
 package crowsoft.reservation.business.concretes;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+
 import crowsoft.reservation.business.abstracts.UserService;
+import crowsoft.reservation.core.entities.User;
 import crowsoft.reservation.core.utilities.results.DataResult;
 import crowsoft.reservation.core.utilities.results.ErrorDataResult;
 import crowsoft.reservation.core.utilities.results.Result;
 import crowsoft.reservation.core.utilities.results.SuccessDataResult;
 import crowsoft.reservation.core.utilities.results.SuccessResult;
 import crowsoft.reservation.dataAccess.abstracts.UserDao;
-import crowsoft.reservation.entities.concretes.User;
 
 @Service
 public class UserManager implements UserService {
@@ -57,6 +59,16 @@ public class UserManager implements UserService {
     public Result delete(int id) {
        this.userDao.deleteById(id);
        return new SuccessResult("User deleted");
+    }
+
+    @Override
+    public DataResult<User> getByEmail(String email) {
+        Optional<User> user = userDao.findByEmail(email);
+        
+        if (user != null) {
+            return new SuccessDataResult<User>(user.get(),"User found.");
+        }
+        return new ErrorDataResult<>("User not found.");
     }
     
 }

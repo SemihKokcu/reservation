@@ -2,7 +2,6 @@ package crowsoft.reservation.business.concretes;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import crowsoft.reservation.business.abstracts.AppointmentService;
@@ -13,17 +12,15 @@ import crowsoft.reservation.core.utilities.results.SuccessDataResult;
 import crowsoft.reservation.core.utilities.results.SuccessResult;
 import crowsoft.reservation.dataAccess.abstracts.AppointmentDao;
 import crowsoft.reservation.entities.concretes.Appointment;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class AppointmentManager implements AppointmentService {
 
     private AppointmentDao _reservationDao;
 
-    @Autowired
-    public AppointmentManager(AppointmentDao reservationDao) {
-        super();
-        this._reservationDao = reservationDao;
-    }
+   
     
     @Override
     public DataResult<List<Appointment>> getAll() {
