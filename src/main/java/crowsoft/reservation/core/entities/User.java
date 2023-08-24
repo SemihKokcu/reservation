@@ -30,7 +30,7 @@ import crowsoft.reservation.core.utilities.security.token.Token;
 public class User implements UserDetails {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue()
   private int id;
   private String firstname;
   private String lastname;

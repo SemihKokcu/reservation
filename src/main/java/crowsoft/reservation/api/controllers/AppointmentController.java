@@ -22,6 +22,7 @@ import crowsoft.reservation.core.utilities.results.DataResult;
 import crowsoft.reservation.core.utilities.results.ErrorDataResult;
 import crowsoft.reservation.entities.concretes.Appointment;
 import crowsoft.reservation.entities.dtos.appointment.AppointmentDTO;
+import crowsoft.reservation.entities.dtos.appointment.AppointmentGetByIdResponse;
 import crowsoft.reservation.entities.dtos.appointment.GetAppointmentByDoctorIdResponse;
 
 import org.springframework.validation.FieldError;
@@ -45,11 +46,19 @@ public class AppointmentController {
             return new ResponseEntity<>(new ErrorDataResult<>("Something went wrong when getting all doctors"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+     @GetMapping("/get/{id}")
+    public ResponseEntity<DataResult<AppointmentGetByIdResponse>> getById(@PathVariable int id) {
+            DataResult<AppointmentGetByIdResponse> result = _reservationService.getById(id);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
     @GetMapping("/get/{id}/appointment")
-    public ResponseEntity<DataResult<List<GetAppointmentByDoctorIdResponse>>> getAppointmentById(@PathVariable int id) {
+    public ResponseEntity<DataResult<List<GetAppointmentByDoctorIdResponse>>> getAppointmentByDoctorId(@PathVariable int id) {
             DataResult<List<GetAppointmentByDoctorIdResponse>> result = _reservationService.getAppointmentsByDoctorr(id);
             return new ResponseEntity<>(result, HttpStatus.OK);
     }
+    
     @PostMapping("/add")
     public ResponseEntity<?> add(@RequestBody Appointment reservation){
         return ResponseEntity.ok(this._reservationService.add(reservation));

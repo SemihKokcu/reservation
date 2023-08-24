@@ -16,6 +16,7 @@ import crowsoft.reservation.core.utilities.results.SuccessResult;
 import crowsoft.reservation.dataAccess.abstracts.AppointmentDao;
 import crowsoft.reservation.entities.concretes.Appointment;
 import crowsoft.reservation.entities.dtos.appointment.AppointmentDTO;
+import crowsoft.reservation.entities.dtos.appointment.AppointmentGetByIdResponse;
 import crowsoft.reservation.entities.dtos.appointment.GetAppointmentByDoctorIdResponse;
 
 @Service
@@ -62,12 +63,18 @@ public class AppointmentManager implements AppointmentService {
     }
 
     @Override
-    public DataResult<Appointment> getById(int id) {
+    public DataResult<AppointmentGetByIdResponse> getById(int id) {
+       
         Appointment appointment = this._reservationDao.findById(id).orElse(null);
-        if (appointment != null) {
-            return new SuccessDataResult<Appointment>(appointment, "Appointment found");
-        }
-        return new ErrorDataResult<>("Appointment not found");
+        AppointmentGetByIdResponse response = new AppointmentGetByIdResponse();
+        response.setId(appointment.getId());
+        response.setDoctorName(appointment.getDoctor().getFirstName());
+        response.setPatientName(appointment.getPatient().getFirstname());
+        response.setConfirmed(appointment.isConfirmed());
+        response.setStartTime(appointment.getStartTime());
+        response.setEndTime(appointment.getEndTime());     
+        
+        return new SuccessDataResult<AppointmentGetByIdResponse>(response, "Appointment found");
     }
 
     @Override
