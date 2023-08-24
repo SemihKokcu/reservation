@@ -6,6 +6,7 @@ import crowsoft.reservation.config.JwtService;
 import crowsoft.reservation.core.dtos.AuthenticationRequest;
 import crowsoft.reservation.core.dtos.AuthenticationResponse;
 import crowsoft.reservation.core.dtos.RegisterRequest;
+import crowsoft.reservation.core.entities.Role;
 import crowsoft.reservation.core.entities.User;
 import crowsoft.reservation.core.utilities.security.token.Token;
 import crowsoft.reservation.core.utilities.security.token.TokenRepository;
@@ -37,7 +38,7 @@ public class AuthenticationService {
         .lastname(request.getLastname())
         .email(request.getEmail())
         .password(passwordEncoder.encode(request.getPassword()))
-        .role(request.getRole())
+        .role(request.getRole() != null ? request.getRole(): Role.USER)
         .build();
     var savedUser = repository.save(user);
     var jwtToken = jwtService.generateToken(user);

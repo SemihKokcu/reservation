@@ -12,6 +12,7 @@ import crowsoft.reservation.core.utilities.results.Result;
 import crowsoft.reservation.core.utilities.results.SuccessDataResult;
 import crowsoft.reservation.core.utilities.results.SuccessResult;
 import crowsoft.reservation.dataAccess.abstracts.DoctorDao;
+import crowsoft.reservation.entities.concretes.Appointment;
 import crowsoft.reservation.entities.concretes.Doctor;
 
 @Service
@@ -56,4 +57,8 @@ public class DoctorManager implements DoctorService {
         doctorDao.deleteById(id);
         return new SuccessResult("Doctor deleted successfully.");
     }
+
+   
+
+   
 }

@@ -5,9 +5,10 @@ import java.util.List;
 import crowsoft.reservation.core.entities.User;
 import crowsoft.reservation.core.utilities.results.DataResult;
 import crowsoft.reservation.core.utilities.results.Result;
+import crowsoft.reservation.entities.dtos.user.GetAllUserResponse;
 
 public interface UserService {
-    DataResult<List<User>> getAll();
+    DataResult<List<GetAllUserResponse>> getAll();
     DataResult<User> getById(int id);
     DataResult<User> getByEmail(String email);
     Result add(User user);

@@ -12,6 +12,7 @@ import crowsoft.reservation.core.entities.User;
 import crowsoft.reservation.core.utilities.results.DataResult;
 import crowsoft.reservation.core.utilities.results.ErrorDataResult;
 import crowsoft.reservation.core.utilities.results.Result;
+import crowsoft.reservation.entities.dtos.user.GetAllUserResponse;
 
 @RestController
 @RequestMapping("api/users")
@@ -25,9 +26,9 @@ public class UsersController {
     }
 
     @GetMapping("/getall")
-    public ResponseEntity<DataResult<List<User>>> getAll() {
+    public ResponseEntity<DataResult<List<GetAllUserResponse>>> getAll() {
         try {
-            DataResult<List<User>> result = userService.getAll();
+            DataResult<List<GetAllUserResponse>> result = userService.getAll();
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
