@@ -8,10 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -24,6 +26,7 @@ import crowsoft.reservation.entities.concretes.Appointment;
 import crowsoft.reservation.entities.dtos.appointment.AppointmentDTO;
 import crowsoft.reservation.entities.dtos.appointment.AppointmentGetByIdResponse;
 import crowsoft.reservation.entities.dtos.appointment.GetAppointmentByDoctorIdResponse;
+import crowsoft.reservation.entities.dtos.appointment.GetAppointmentByUserIdResponse;
 
 import org.springframework.validation.FieldError;
 @RestController
@@ -58,11 +61,30 @@ public class AppointmentController {
             DataResult<List<GetAppointmentByDoctorIdResponse>> result = _reservationService.getAppointmentsByDoctorr(id);
             return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+      @GetMapping("/get/{id}/user")
+    public ResponseEntity<DataResult<List<GetAppointmentByUserIdResponse>>> getAppointmentByUserId(@PathVariable int id) {
+            DataResult<List<GetAppointmentByUserIdResponse>> result = _reservationService.getAppointmentsByUserId(id);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+    }
     
     @PostMapping("/add")
     public ResponseEntity<?> add(@RequestBody Appointment reservation){
         return ResponseEntity.ok(this._reservationService.add(reservation));
     }
+
+    
+    @PutMapping("/update")
+    public ResponseEntity<?> update(@RequestBody Appointment appointment){
+        return ResponseEntity.ok(this._reservationService.update(appointment));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable int id){
+        return ResponseEntity.ok(this._reservationService.delete(id));
+    }
+
+    
 
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

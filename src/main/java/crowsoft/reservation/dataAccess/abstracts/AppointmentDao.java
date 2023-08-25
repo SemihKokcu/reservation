@@ -8,4 +8,5 @@ import crowsoft.reservation.entities.concretes.Appointment;
 
 public interface AppointmentDao extends JpaRepository<Appointment,Integer> {
     List<Appointment> findByDoctorId(int id);
+    List<Appointment> findByPatientId(int id);
 }

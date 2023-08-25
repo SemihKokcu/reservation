@@ -60,8 +60,6 @@ public class DoctorsController {
         }
     }
 
-     
-
     @PostMapping("/add")
     public ResponseEntity<Result> add(@RequestBody Doctor doctor) {
         Result result = doctorService.add(doctor);

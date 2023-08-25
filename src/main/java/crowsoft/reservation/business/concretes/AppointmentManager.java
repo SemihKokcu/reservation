@@ -15,9 +15,11 @@ import crowsoft.reservation.core.utilities.results.SuccessDataResult;
 import crowsoft.reservation.core.utilities.results.SuccessResult;
 import crowsoft.reservation.dataAccess.abstracts.AppointmentDao;
 import crowsoft.reservation.entities.concretes.Appointment;
+import crowsoft.reservation.entities.concretes.Doctor;
 import crowsoft.reservation.entities.dtos.appointment.AppointmentDTO;
 import crowsoft.reservation.entities.dtos.appointment.AppointmentGetByIdResponse;
 import crowsoft.reservation.entities.dtos.appointment.GetAppointmentByDoctorIdResponse;
+import crowsoft.reservation.entities.dtos.appointment.GetAppointmentByUserIdResponse;
 
 @Service
 public class AppointmentManager implements AppointmentService {
@@ -28,11 +30,6 @@ public class AppointmentManager implements AppointmentService {
     @Autowired
     public AppointmentManager(AppointmentDao _reservationDao) {
         this._reservationDao = _reservationDao;
-    }
-
-    @Override
-    public DataResult<List<Appointment>> getAll() {
-        return new SuccessDataResult<List<Appointment>>(this._reservationDao.findAll(), "Data Listed");
     }
 
     public DataResult<List<AppointmentDTO>> getAllAppointmentsWithDetails() {
@@ -67,9 +64,20 @@ public class AppointmentManager implements AppointmentService {
        
         Appointment appointment = this._reservationDao.findById(id).orElse(null);
         AppointmentGetByIdResponse response = new AppointmentGetByIdResponse();
+        var doctor = Doctor.builder()
+        .id(appointment.getDoctor().getId())
+        .firstName(appointment.getDoctor().getFirstName())
+        .lastName(appointment.getDoctor().getLastName())
+        .build();
+        var user = User.builder()
+            .id(appointment.getPatient().getId())
+            .firstname(appointment.getPatient().getFirstname())
+            .lastname(appointment.getPatient().getLastname())
+            .role(appointment.getPatient().getRole())
+            .build();
         response.setId(appointment.getId());
-        response.setDoctorName(appointment.getDoctor().getFirstName());
-        response.setPatientName(appointment.getPatient().getFirstname());
+        response.setDoctorName(doctor);
+        response.setPatientName(user);
         response.setConfirmed(appointment.isConfirmed());
         response.setStartTime(appointment.getStartTime());
         response.setEndTime(appointment.getEndTime());     
@@ -87,16 +95,6 @@ public class AppointmentManager implements AppointmentService {
     public Result delete(int id) {
         this._reservationDao.deleteById(id);
         return new SuccessResult("Appointment deleted");
-    }
-
-    @Override
-    public DataResult<List<Appointment>> getAppointmentsByDoctor(int id) {
-        try {
-            List<Appointment> result = this._reservationDao.findByDoctorId(id);
-            return new SuccessDataResult<List<Appointment>>(result, "AppointmentsByDoctor Listed");
-        } catch (Exception e) {
-            return new ErrorDataResult<>(null, "An error occurred while getting appointments: " + e.getMessage());
-        }
     }
 
     @Override
@@ -123,5 +121,28 @@ public class AppointmentManager implements AppointmentService {
         } catch (Exception e) {
             return new ErrorDataResult<>(null, "An error occurred while getting appointments: " + e.getMessage());
         }
+    }
+
+    @Override
+    public DataResult<List<GetAppointmentByUserIdResponse>> getAppointmentsByUserId(int id) {
+        List<Appointment> appointmentsByUserId = this._reservationDao.findByPatientId(id);
+        List<GetAppointmentByUserIdResponse> result = new ArrayList<>();
+
+        for (Appointment appointment : appointmentsByUserId) {
+           var byUserId = GetAppointmentByUserIdResponse.builder()
+           .id(appointment.getId())
+           .confirmed(appointment.isConfirmed())
+           .doctorId(appointment.getDoctor().getId())
+           .doctorName(appointment.getDoctor().getFirstName())
+           .startTime(appointment.getStartTime())
+           .endTime(appointment.getEndTime())
+           .patientName(appointment.getPatient().getFirstname())
+           .build();
+
+           result.add(byUserId);
+        }
+
+         return new SuccessDataResult<List<GetAppointmentByUserIdResponse>>(result, "AppointmentsByUserId Listed");
+
     }
 }

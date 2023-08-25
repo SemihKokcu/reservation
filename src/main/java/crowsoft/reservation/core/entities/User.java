@@ -20,6 +20,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import crowsoft.reservation.core.utilities.security.token.Token;
+import io.micrometer.common.lang.Nullable;
 
 @Data
 @Builder
@@ -38,6 +39,7 @@ public class User implements UserDetails {
   private String password;
 
   @Enumerated(EnumType.STRING)
+  @Nullable
   private Role role;
 
   @OneToMany(mappedBy = "user")
