@@ -1,5 +1,6 @@
 package crowsoft.reservation.business.concretes;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import crowsoft.reservation.business.abstracts.AppointmentService;
 import crowsoft.reservation.core.entities.User;
 import crowsoft.reservation.core.utilities.results.DataResult;
 import crowsoft.reservation.core.utilities.results.ErrorDataResult;
+import crowsoft.reservation.core.utilities.results.ErrorResult;
 import crowsoft.reservation.core.utilities.results.Result;
 import crowsoft.reservation.core.utilities.results.SuccessDataResult;
 import crowsoft.reservation.core.utilities.results.SuccessResult;
@@ -52,13 +54,16 @@ public class AppointmentManager implements AppointmentService {
 
     return new SuccessDataResult<List<AppointmentDTO>>(appointmentDTOs, "Data Listed");
 }
+@Override
+public Result add(Appointment reservation) {
 
-    @Override
-    public Result add(Appointment reservation) {
-        this._reservationDao.save(reservation);
-        return new SuccessResult("Reservation added");
+    List<Appointment> overlappingAppointments = checkStartAndEndTime(reservation.getStartTime(), reservation.getEndTime());
+    if (!overlappingAppointments.isEmpty()) {
+        return new ErrorResult("There is an overlapping appointment.");
     }
-
+    this._reservationDao.save(reservation);
+    return new SuccessResult("Reservation added");
+}
     @Override
     public DataResult<AppointmentGetByIdResponse> getById(int id) {
        
@@ -144,5 +149,14 @@ public class AppointmentManager implements AppointmentService {
 
          return new SuccessDataResult<List<GetAppointmentByUserIdResponse>>(result, "AppointmentsByUserId Listed");
 
+    }
+
+    private List<Appointment> checkStartAndEndTime(LocalDateTime startDateTime,LocalDateTime endDateTime){
+        
+        List<Appointment> overlappingAppointments = _reservationDao.findByStartTimeBetweenAndEndTimeBetween(
+            startDateTime, endDateTime,
+            startDateTime, endDateTime);
+
+            return overlappingAppointments;
     }
 }
