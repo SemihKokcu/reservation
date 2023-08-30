@@ -3,6 +3,7 @@ package crowsoft.reservation.api.controllers;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,13 +16,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import crowsoft.reservation.business.abstracts.AppointmentService;
+import crowsoft.reservation.config.JwtService;
+import crowsoft.reservation.core.entities.User;
 import crowsoft.reservation.core.utilities.results.DataResult;
 import crowsoft.reservation.core.utilities.results.ErrorDataResult;
+import crowsoft.reservation.dataAccess.abstracts.UserDao;
 import crowsoft.reservation.entities.concretes.Appointment;
 import crowsoft.reservation.entities.dtos.appointment.AppointmentDTO;
 import crowsoft.reservation.entities.dtos.appointment.AppointmentGetByIdResponse;
@@ -34,12 +39,16 @@ import org.springframework.validation.FieldError;
 public class AppointmentController {
     
     private AppointmentService _reservationService;
+    private JwtService _jwtService;
+    private UserDao _userDao;
     
-    @Autowired
-    public AppointmentController(AppointmentService reservationService) {
-        super();
-        this._reservationService = reservationService;
+    
+    public AppointmentController(AppointmentService _reservationService, JwtService _jwtService, UserDao _userDao) {
+        this._reservationService = _reservationService;
+        this._jwtService = _jwtService;
+        this._userDao = _userDao;
     }
+  
      @GetMapping("/getall")
     public ResponseEntity<DataResult<List<AppointmentDTO>>> getAll() {
         try {
@@ -69,8 +78,10 @@ public class AppointmentController {
     }
     
     @PostMapping("/add")
-    public ResponseEntity<?> add(@RequestBody Appointment reservation){
-        return ResponseEntity.ok(this._reservationService.add(reservation));
+    public ResponseEntity<?> add(@RequestBody Appointment reservation, @RequestHeader("Authorization") String token){
+        String originalToken = token.substring(7);
+         String userEmail = this._jwtService.extractUsername(originalToken);
+        return ResponseEntity.ok(this._reservationService.add(reservation,userEmail));
     }
 
     

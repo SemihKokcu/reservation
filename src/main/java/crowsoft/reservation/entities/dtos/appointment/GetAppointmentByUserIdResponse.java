@@ -18,6 +18,5 @@ public class GetAppointmentByUserIdResponse {
     private String doctorName;
     private String patientName;
     private LocalDateTime startTime;
-    private LocalDateTime endTime;
     private boolean confirmed;
 }

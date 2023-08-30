@@ -11,7 +11,7 @@ import crowsoft.reservation.entities.dtos.appointment.AppointmentGetByIdResponse
 
 public interface AppointmentService {
     DataResult<AppointmentGetByIdResponse> getById(int id);
-    Result add(Appointment appointment);
+    Result add(Appointment appointment,String userEmail);
     Result update(Appointment appointment);
     Result delete(int id);
     DataResult<List<AppointmentDTO>> getAllAppointmentsWithDetails();

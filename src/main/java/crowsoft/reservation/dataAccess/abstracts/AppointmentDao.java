@@ -10,7 +10,6 @@ import crowsoft.reservation.entities.concretes.Appointment;
 public interface AppointmentDao extends JpaRepository<Appointment,Integer> {
     List<Appointment> findByDoctorId(int id);
     List<Appointment> findByPatientId(int id);
-    List<Appointment> findByStartTimeBetweenAndEndTimeBetween(LocalDateTime startTime, LocalDateTime endTime,
-            LocalDateTime startTime2, LocalDateTime endTime2);
+    List<Appointment> findByStartTime(LocalDateTime startTime);
   
 }

@@ -3,6 +3,8 @@ package crowsoft.reservation.business.concretes;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import crowsoft.reservation.core.utilities.results.Result;
 import crowsoft.reservation.core.utilities.results.SuccessDataResult;
 import crowsoft.reservation.core.utilities.results.SuccessResult;
 import crowsoft.reservation.dataAccess.abstracts.AppointmentDao;
+import crowsoft.reservation.dataAccess.abstracts.UserDao;
 import crowsoft.reservation.entities.concretes.Appointment;
 import crowsoft.reservation.entities.concretes.Doctor;
 import crowsoft.reservation.entities.dtos.appointment.AppointmentDTO;
@@ -27,11 +30,12 @@ import crowsoft.reservation.entities.dtos.appointment.GetAppointmentByUserIdResp
 public class AppointmentManager implements AppointmentService {
 
     private AppointmentDao _reservationDao;
-
+    private UserDao _userDao;
    
     @Autowired
-    public AppointmentManager(AppointmentDao _reservationDao) {
+    public AppointmentManager(AppointmentDao _reservationDao,UserDao _userDao) {
         this._reservationDao = _reservationDao;
+        this._userDao = _userDao;
     }
 
     public DataResult<List<AppointmentDTO>> getAllAppointmentsWithDetails() {
@@ -45,7 +49,6 @@ public class AppointmentManager implements AppointmentService {
             appointment.getDoctor().getFirstName(),
             appointment.getPatient().getName(),
             appointment.getStartTime(),
-            appointment.getEndTime(),
             appointment.isConfirmed()
         );
 
@@ -54,14 +57,21 @@ public class AppointmentManager implements AppointmentService {
 
     return new SuccessDataResult<List<AppointmentDTO>>(appointmentDTOs, "Data Listed");
 }
-@Override
-public Result add(Appointment reservation) {
-
-    List<Appointment> overlappingAppointments = checkStartAndEndTime(reservation.getStartTime(), reservation.getEndTime());
-    if (!overlappingAppointments.isEmpty()) {
+public Result add(Appointment reservation,String userEmail) {
+    List<Appointment> overlappingAppointments = checkDoctorAppointments(reservation.getStartTime(), reservation.getDoctor().getId());
+    
+    if (countOverlappingAppointments(reservation.getStartTime(), overlappingAppointments) > 0) {
         return new ErrorResult("There is an overlapping appointment.");
     }
-    this._reservationDao.save(reservation);
+    Optional<User> user = this._userDao.findByEmail(userEmail);
+
+    var appointment = Appointment.builder().
+    patient(user.get())
+    .doctor(reservation.getDoctor())
+    .confirmed(reservation.isConfirmed())
+    .startTime(reservation.getStartTime()).
+    build();
+    _reservationDao.save(appointment);
     return new SuccessResult("Reservation added");
 }
     @Override
@@ -84,7 +94,6 @@ public Result add(Appointment reservation) {
         response.setPatientName(user);
         response.setConfirmed(appointment.isConfirmed());
         response.setStartTime(appointment.getStartTime());
-        response.setEndTime(appointment.getEndTime());     
         
         return new SuccessDataResult<AppointmentGetByIdResponse>(response, "Appointment found");
     }
@@ -112,7 +121,6 @@ public Result add(Appointment reservation) {
                 var byDoctorId = GetAppointmentByDoctorIdResponse.builder()
                 .doctorName(apoint.getDoctor().getFirstName())
                 .confirmed(apoint.isConfirmed())
-                .endTime(apoint.getEndTime())
                 .startTime(apoint.getStartTime())
                 .id(apoint.getId())
                 .patientName(apoint.getPatient().getName())
@@ -139,7 +147,6 @@ public Result add(Appointment reservation) {
            .doctorId(appointment.getDoctor().getId())
            .doctorName(appointment.getDoctor().getFirstName())
            .startTime(appointment.getStartTime())
-           .endTime(appointment.getEndTime())
            .patientName(appointment.getPatient().getName())
            .build();
 
@@ -150,12 +157,19 @@ public Result add(Appointment reservation) {
 
     }
 
-    private List<Appointment> checkStartAndEndTime(LocalDateTime startDateTime,LocalDateTime endDateTime){
+    private long countOverlappingAppointments(LocalDateTime startDateTime, List<Appointment> appointments) {
+        return appointments.stream()
+            .filter(appointment -> appointment.getStartTime().isEqual(startDateTime))
+            .count();
+    }
+    
+    private List<Appointment> checkDoctorAppointments(LocalDateTime startDateTime, int doctorId) {
+        List<Appointment> allDoctorAppointments = _reservationDao.findByDoctorId(doctorId);
         
-        List<Appointment> overlappingAppointments = _reservationDao.findByStartTimeBetweenAndEndTimeBetween(
-            startDateTime, endDateTime,
-            startDateTime, endDateTime);
-
-            return overlappingAppointments;
+        List<Appointment> overlappingAppointments = allDoctorAppointments.stream()
+            .filter(appointment -> appointment.getStartTime().isEqual(startDateTime))
+            .collect(Collectors.toList());
+    
+        return overlappingAppointments;
     }
 }
