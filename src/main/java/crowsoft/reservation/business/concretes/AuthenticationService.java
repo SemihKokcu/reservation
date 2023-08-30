@@ -12,12 +12,14 @@ import crowsoft.reservation.core.utilities.security.token.Token;
 import crowsoft.reservation.core.utilities.security.token.TokenRepository;
 import crowsoft.reservation.core.utilities.security.token.TokenType;
 import crowsoft.reservation.dataAccess.abstracts.UserDao;
+import crowsoft.reservation.entities.dtos.CheckTokenDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,8 +36,7 @@ public class AuthenticationService {
 
   public AuthenticationResponse register(RegisterRequest request) {
     var user = User.builder()
-        .firstname(request.getFirstname())
-        .lastname(request.getLastname())
+        .name(request.getName())
         .email(request.getEmail())
         .password(passwordEncoder.encode(request.getPassword()))
         .role(request.getRole() != null ? request.getRole(): Role.USER)
@@ -51,7 +52,7 @@ public class AuthenticationService {
   }
 
   public AuthenticationResponse authenticate(AuthenticationRequest request) {
-    authenticationManager.authenticate(
+    authenticationManager.authenticate(cd ..cd 
         new UsernamePasswordAuthenticationToken(
             request.getEmail(),
             request.getPassword()
@@ -59,13 +60,14 @@ public class AuthenticationService {
     );
     var user = repository.findByEmail(request.getEmail())
         .orElseThrow();
-    var jwtToken = jwtService.generateToken(user);
+    var jwtToken = jwtService.generateToken(user);  
     var refreshToken = jwtService.generateRefreshToken(user);
     revokeAllUserTokens(user);
     saveUserToken(user, jwtToken);
     return AuthenticationResponse.builder()
         .accessToken(jwtToken)
             .refreshToken(refreshToken)
+            .role(user.getRole())
         .build();
   }
 
@@ -118,4 +120,21 @@ public class AuthenticationService {
       }
     }
   }
+
+  public boolean isAuthenticated(CheckTokenDTO tokenDTO) {
+
+    String originalToken = tokenDTO.getToken();
+    String userEmail = jwtService.extractUsername(originalToken);
+    if (userEmail != null) {
+     var user = this.repository.findByEmail(userEmail)
+              .orElseThrow();
+      if (jwtService.isTokenValid(originalToken, user)) {
+        return true;
+      }
+      return false;
+    }
+    return false;
+    
+  }
+  
 }
