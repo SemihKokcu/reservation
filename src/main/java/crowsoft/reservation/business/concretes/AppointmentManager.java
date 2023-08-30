@@ -43,7 +43,7 @@ public class AppointmentManager implements AppointmentService {
         AppointmentDTO appointmentDTO = new AppointmentDTO(
             appointment.getId(),
             appointment.getDoctor().getFirstName(),
-            appointment.getPatient().getFirstname(),
+            appointment.getPatient().getName(),
             appointment.getStartTime(),
             appointment.getEndTime(),
             appointment.isConfirmed()
@@ -76,8 +76,7 @@ public Result add(Appointment reservation) {
         .build();
         var user = User.builder()
             .id(appointment.getPatient().getId())
-            .firstname(appointment.getPatient().getFirstname())
-            .lastname(appointment.getPatient().getLastname())
+            .name(appointment.getPatient().getName())
             .role(appointment.getPatient().getRole())
             .build();
         response.setId(appointment.getId());
@@ -116,7 +115,7 @@ public Result add(Appointment reservation) {
                 .endTime(apoint.getEndTime())
                 .startTime(apoint.getStartTime())
                 .id(apoint.getId())
-                .patientName(apoint.getPatient().getFirstname())
+                .patientName(apoint.getPatient().getName())
                 .build();
 
                 res.add(byDoctorId);
@@ -141,7 +140,7 @@ public Result add(Appointment reservation) {
            .doctorName(appointment.getDoctor().getFirstName())
            .startTime(appointment.getStartTime())
            .endTime(appointment.getEndTime())
-           .patientName(appointment.getPatient().getFirstname())
+           .patientName(appointment.getPatient().getName())
            .build();
 
            result.add(byUserId);

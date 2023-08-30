@@ -12,11 +12,15 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import static crowsoft.reservation.core.entities.Permission.ADMIN_CREATE;
 import static crowsoft.reservation.core.entities.Permission.ADMIN_DELETE;
@@ -38,7 +42,7 @@ import java.time.LocalDateTime;
 @EnableWebSecurity
 @RequiredArgsConstructor
 @EnableMethodSecurity
-public class SecurityConfiguration {
+public class SecurityConfiguration extends WebSecurityConfiguration  {
 
   private final JwtAuthenticationFilter jwtAuthFilter;
   private final AuthenticationProvider authenticationProvider;
@@ -49,6 +53,8 @@ public class SecurityConfiguration {
     http
         .csrf()
         .disable()
+        .cors()
+        .and()
         .authorizeHttpRequests()
         .requestMatchers(
             "/api/auth/**",
@@ -104,4 +110,18 @@ public class SecurityConfiguration {
     ;
     return http.build();
   }
+
+  @Bean
+public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.addAllowedOrigin("http://localhost:3000"); // İzin verilen alan adı
+    configuration.addAllowedHeader("*");
+    configuration.addAllowedMethod("*");
+    
+    // Diğer CORS ayarlarını burada ekleyebilirsiniz
+    
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
+}
 }

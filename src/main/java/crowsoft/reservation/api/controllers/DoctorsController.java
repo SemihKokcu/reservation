@@ -24,7 +24,6 @@ import crowsoft.reservation.business.abstracts.DoctorService;
 import crowsoft.reservation.core.utilities.results.DataResult;
 import crowsoft.reservation.core.utilities.results.ErrorDataResult;
 import crowsoft.reservation.core.utilities.results.Result;
-import crowsoft.reservation.entities.concretes.Appointment;
 import crowsoft.reservation.entities.concretes.Doctor;
 import io.swagger.v3.oas.annotations.tags.Tag;
 

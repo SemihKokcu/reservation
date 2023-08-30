@@ -1,6 +1,8 @@
 package crowsoft.reservation.core.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import crowsoft.reservation.core.entities.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,6 +14,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AuthenticationResponse {
 
+
+  private Role role;
   @JsonProperty("access_token")
   private String accessToken;
   @JsonProperty("refresh_token")

@@ -19,7 +19,6 @@ import lombok.NoArgsConstructor;
 public class GetAllUserResponse {
     private int id;
     private String email;
-    private String firstName;
-    private String lastName;
+    private String name;
     private List<SimpleGrantedAuthority> roles;
 }

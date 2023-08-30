@@ -41,8 +41,7 @@ public class UserManager implements UserService {
                     var userDTO = GetAllUserResponse.builder()
                         .id(temp.getId())
                         .email(temp.getEmail())
-                        .firstName(temp.getFirstname())
-                        .lastName(temp.getLastname())
+                        .name(temp.getName())
                         .roles(authorities)
                         .build();
                         usersDTO.add(userDTO);

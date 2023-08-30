@@ -4,8 +4,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,6 +15,7 @@ import crowsoft.reservation.business.concretes.AuthenticationService;
 import crowsoft.reservation.core.dtos.AuthenticationRequest;
 import crowsoft.reservation.core.dtos.AuthenticationResponse;
 import crowsoft.reservation.core.dtos.RegisterRequest;
+import crowsoft.reservation.entities.dtos.CheckTokenDTO;
 
 import java.io.IOException;
 
@@ -43,6 +46,12 @@ public class AuthenticationController {
   ) throws IOException {
     service.refreshToken(request, response);
   }
+
+  @PostMapping("/check-auth")
+public boolean checkAuth(@RequestBody CheckTokenDTO token) {
+    return this.service.isAuthenticated(token);
+}
+
 
 
 }

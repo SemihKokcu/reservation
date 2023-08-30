@@ -16,6 +16,7 @@ import crowsoft.reservation.entities.dtos.user.GetAllUserResponse;
 
 @RestController
 @RequestMapping("api/users")
+
 public class UsersController {
 
     private UserService userService;
