@@ -172,4 +172,26 @@ public Result add(Appointment reservation,String userEmail) {
     
         return overlappingAppointments;
     }
+
+    @Override
+    public DataResult<List<GetAppointmentByUserIdResponse>> getAppointmentsByUser(String userEmail) {
+
+        Optional<User> user = this._userDao.findByEmail(userEmail);
+         List<Appointment> appointmentsByUserId = this._reservationDao.findByPatientId(user.get().getId());
+          List<GetAppointmentByUserIdResponse> result = new ArrayList<>();
+
+        for (Appointment appointment : appointmentsByUserId) {
+           var byUserId = GetAppointmentByUserIdResponse.builder()
+           .id(appointment.getId())
+           .confirmed(appointment.isConfirmed())
+           .doctorId(appointment.getDoctor().getId())
+           .doctorName(appointment.getDoctor().getFirstName())
+           .startTime(appointment.getStartTime())
+           .patientName(appointment.getPatient().getName())
+           .build();
+
+           result.add(byUserId);
+        }
+         return new SuccessDataResult<List<GetAppointmentByUserIdResponse>>(result, "AppointmentsByUserId Listed");
+    }
 }

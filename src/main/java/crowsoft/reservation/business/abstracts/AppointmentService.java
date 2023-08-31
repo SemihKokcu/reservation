@@ -17,6 +17,7 @@ public interface AppointmentService {
     DataResult<List<AppointmentDTO>> getAllAppointmentsWithDetails();
     DataResult<List<GetAppointmentByDoctorIdResponse>> getAppointmentsByDoctorr(int id);
     DataResult<List<GetAppointmentByUserIdResponse>> getAppointmentsByUserId(int id);
+    DataResult<List<GetAppointmentByUserIdResponse>> getAppointmentsByUser(String userEmail);
 
 
 

@@ -76,6 +76,14 @@ public class AppointmentController {
             DataResult<List<GetAppointmentByUserIdResponse>> result = _reservationService.getAppointmentsByUserId(id);
             return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+     @GetMapping("/getAll/byUser")
+    public ResponseEntity<DataResult<List<GetAppointmentByUserIdResponse>>> getAppointmentByUser( @RequestHeader("Authorization") String token) {
+             String originalToken = token.substring(7);
+             String userEmail = this._jwtService.extractUsername(originalToken);
+            DataResult<List<GetAppointmentByUserIdResponse>> result = _reservationService.getAppointmentsByUser(userEmail);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+    }
     
     @PostMapping("/add")
     public ResponseEntity<?> add(@RequestBody Appointment reservation, @RequestHeader("Authorization") String token){
